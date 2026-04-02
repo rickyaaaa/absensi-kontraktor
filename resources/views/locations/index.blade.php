@@ -56,6 +56,7 @@
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Lokasi</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipe</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Koordinat</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Radius (m)</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -67,6 +68,13 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $loc->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        @if($loc->type === 'kantor_pusat')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">🏢 Kantor Pusat</span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">🏗️ Project</span>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <a href="https://www.google.com/maps?q={{ $loc->latitude }},{{ $loc->longitude }}" target="_blank" class="text-indigo-600 hover:underline">
                                             {{ $loc->latitude }}, {{ $loc->longitude }}
@@ -96,7 +104,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">Belum ada data lokasi. Klik "Tambah Lokasi" untuk menambahkan.</td>
+                                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">Belum ada data lokasi. Klik "Tambah Lokasi" untuk menambahkan.</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -127,6 +135,14 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lokasi</label>
                                 <input type="text" name="name" required placeholder="cth: Proyek A, Kantor Cabang"
                                     class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tipe Lokasi</label>
+                                <select name="type" required class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                    <option value="kantor_pusat">🏢 Kantor Pusat (Default)</option>
+                                    <option value="project" selected>🏗️ Lokasi Project</option>
+                                </select>
                             </div>
 
                             {{-- Search alamat --}}
@@ -194,6 +210,14 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lokasi</label>
                                 <input type="text" name="name" id="edit_name" required
                                     class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tipe Lokasi</label>
+                                <select name="type" id="edit_type" required class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                    <option value="kantor_pusat">🏢 Kantor Pusat (Default)</option>
+                                    <option value="project">🏗️ Lokasi Project</option>
+                                </select>
                             </div>
 
                             {{-- Search alamat --}}
@@ -368,6 +392,7 @@
 
         function openEditModal(loc) {
             document.getElementById('edit_name').value = loc.name;
+            document.getElementById('edit_type').value = loc.type || 'project';
             document.getElementById('edit_lat').value = loc.latitude;
             document.getElementById('edit_lng').value = loc.longitude;
             document.getElementById('edit_radius').value = loc.radius;

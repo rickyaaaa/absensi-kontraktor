@@ -80,12 +80,16 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
+        // Active locations for clock-in selector
+        $locations = Location::where('is_active', true)->orderBy('type')->orderBy('name')->get();
+
         return view('dashboard.supervisor', compact(
             'employee',
             'todayAttendance',
             'recentAttendances',
             'recentPayrolls',
-            'workerAttendances'
+            'workerAttendances',
+            'locations'
         ));
     }
 
@@ -117,11 +121,15 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Active locations for clock-in selector
+        $locations = Location::where('is_active', true)->orderBy('type')->orderBy('name')->get();
+
         return view('dashboard.worker', compact(
             'employee',
             'todayAttendance',
             'recentAttendances',
-            'recentPayrolls'
+            'recentPayrolls',
+            'locations'
         ));
     }
 }

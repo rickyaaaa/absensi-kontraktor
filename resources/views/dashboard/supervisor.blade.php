@@ -61,6 +61,24 @@
 
                         @if(!$todayAttendance || !$todayAttendance->time_out)
                             <div id="attendance-section">
+                                {{-- Location Selector --}}
+                                <div class="mb-4 p-4 bg-indigo-50 rounded-lg border border-indigo-100">
+                                    <label for="location-select" class="block text-sm font-semibold text-indigo-800 mb-2">📍 Pilih Lokasi Absensi</label>
+                                    <select id="location-select" onchange="onLocationSelect(this)"
+                                        class="block w-full rounded-lg border-indigo-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white">
+                                        <option value="" disabled selected>-- Pilih Lokasi --</option>
+                                        @isset($locations)
+                                            @foreach($locations as $loc)
+                                                <option value="{{ $loc->id }}" data-name="{{ $loc->name }}" data-type="{{ $loc->type }}">
+                                                    {{ $loc->type === 'kantor_pusat' ? '🏢' : '🏗️' }} {{ $loc->name }}
+                                                    ({{ $loc->type === 'kantor_pusat' ? 'Kantor Pusat' : 'Project' }})
+                                                </option>
+                                            @endforeach
+                                        @endisset
+                                    </select>
+                                    <p class="mt-1 text-xs text-indigo-500">Kantor Pusat = lokasi default | Project = ditentukan Admin</p>
+                                </div>
+
                                 {{-- Camera Preview --}}
                                 <div id="camera-container" class="mb-4 hidden">
                                     <div class="relative max-w-md mx-auto">
@@ -90,7 +108,7 @@
                                 <div class="flex justify-center gap-3">
                                     @if(!$todayAttendance)
                                         <button type="button" id="btn-start-clockin" onclick="startAttendance('clockin')"
-                                            class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-sm">
+                                            class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                                             <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                                             Absen Masuk
                                         </button>
@@ -106,7 +124,7 @@
                                         </form>
                                     @elseif(!$todayAttendance->time_out)
                                         <button type="button" id="btn-start-clockout" onclick="startAttendance('clockout')"
-                                            class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium shadow-sm">
+                                            class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                                             <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                                             Absen Pulang
                                         </button>
@@ -230,6 +248,18 @@
         let currentMode = null;
         let userLatitude = null;
         let userLongitude = null;
+        let selectedLocationName = '';
+
+        // ============ LOCATION SELECTOR ============
+        function onLocationSelect(select) {
+            const option = select.options[select.selectedIndex];
+            selectedLocationName = option.dataset.name || '';
+
+            const btnIn = document.getElementById('btn-start-clockin');
+            const btnOut = document.getElementById('btn-start-clockout');
+            if (btnIn) btnIn.disabled = false;
+            if (btnOut) btnOut.disabled = false;
+        }
 
         function updateClock() {
             const now = new Date();
@@ -322,13 +352,13 @@
                 document.getElementById('selfie-data-in').value = dataUrl;
                 document.getElementById('lat-in').value = userLatitude || '';
                 document.getElementById('lng-in').value = userLongitude || '';
-                document.getElementById('loc-in').value = `${userLatitude},${userLongitude}`;
+                document.getElementById('loc-in').value = selectedLocationName || `${userLatitude},${userLongitude}`;
                 document.getElementById('form-clockin').classList.remove('hidden');
             } else {
                 document.getElementById('selfie-data-out').value = dataUrl;
                 document.getElementById('lat-out').value = userLatitude || '';
                 document.getElementById('lng-out').value = userLongitude || '';
-                document.getElementById('loc-out').value = `${userLatitude},${userLongitude}`;
+                document.getElementById('loc-out').value = selectedLocationName || `${userLatitude},${userLongitude}`;
                 document.getElementById('form-clockout').classList.remove('hidden');
             }
         }

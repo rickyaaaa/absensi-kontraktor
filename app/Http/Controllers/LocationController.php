@@ -23,12 +23,13 @@ class LocationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'type' => 'required|in:kantor_pusat,project',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
             'radius' => 'required|integer|min:10|max:5000',
         ]);
 
-        Location::create($request->only(['name', 'latitude', 'longitude', 'radius']));
+        Location::create($request->only(['name', 'type', 'latitude', 'longitude', 'radius']));
 
         return redirect()->route('locations.index')
             ->with('success', 'Lokasi berhasil ditambahkan.');
@@ -41,12 +42,13 @@ class LocationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'type' => 'required|in:kantor_pusat,project',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
             'radius' => 'required|integer|min:10|max:5000',
         ]);
 
-        $location->update($request->only(['name', 'latitude', 'longitude', 'radius']));
+        $location->update($request->only(['name', 'type', 'latitude', 'longitude', 'radius']));
 
         return redirect()->route('locations.index')
             ->with('success', 'Lokasi berhasil diperbarui.');
