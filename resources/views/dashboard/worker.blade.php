@@ -27,11 +27,22 @@
                     <p class="mt-2 text-yellow-800 font-medium">Data karyawan Anda belum terdaftar. Hubungi admin.</p>
                 </div>
             @else
-                {{-- Clock In/Out Section --}}
+                {{-- Real-time Clock --}}
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                    <div class="p-6 text-center">
+                        <p class="text-sm text-gray-500 mb-1">Waktu Server (Jakarta)</p>
+                        <p id="live-clock" class="text-4xl font-bold text-indigo-600 font-mono">--:--:--</p>
+                        <p id="live-date" class="text-sm text-gray-500 mt-1">-</p>
+                    </div>
+                </div>
+
+                {{-- Clock In/Out Section with Selfie --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Absensi Hari Ini</h3>
-                        <div class="flex flex-col sm:flex-row items-center gap-4">
+
+                        {{-- Status --}}
+                        <div class="flex flex-col sm:flex-row items-center gap-4 mb-6">
                             <div class="flex-1 text-center sm:text-left">
                                 <p class="text-sm text-gray-500">Status:</p>
                                 @if(!$todayAttendance)
@@ -41,38 +52,104 @@
                                     @if($todayAttendance->late_minutes > 0)
                                         <p class="text-sm text-red-500">Terlambat {{ $todayAttendance->late_minutes }} menit</p>
                                     @endif
+                                    @if($todayAttendance->location_status === 'luar_lokasi')
+                                        <p class="text-sm text-orange-500">⚠️ Luar Lokasi</p>
+                                    @endif
                                 @else
                                     <p class="text-lg font-bold text-green-600">Sudah Pulang ({{ $todayAttendance->time_out }})</p>
                                 @endif
                             </div>
-                            <div class="flex gap-3">
-                                @if(!$todayAttendance)
-                                    <form method="POST" action="{{ route('attendance.clockIn') }}" enctype="multipart/form-data">
-                                        @csrf
-                                        <button type="submit" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-sm">
+
+                            {{-- GPS Status --}}
+                            <div id="gps-status" class="text-center">
+                                <p class="text-sm text-gray-500">📍 GPS:</p>
+                                <p id="gps-info" class="text-sm font-medium text-gray-400">Mendeteksi...</p>
+                            </div>
+                        </div>
+
+                        {{-- Camera + Action --}}
+                        @if(!$todayAttendance || !$todayAttendance->time_out)
+                            <div id="attendance-section">
+                                {{-- Camera Preview --}}
+                                <div id="camera-container" class="mb-4 hidden">
+                                    <div class="relative max-w-md mx-auto">
+                                        <video id="camera-preview" autoplay playsinline class="w-full rounded-lg border-2 border-indigo-300 shadow-lg" style="transform: scaleX(-1);"></video>
+                                        <canvas id="camera-canvas" class="hidden"></canvas>
+                                        <div class="absolute bottom-3 left-0 right-0 text-center">
+                                            <button type="button" id="btn-capture" onclick="captureSelfie()"
+                                                class="inline-flex items-center px-6 py-3 bg-white text-indigo-700 rounded-full shadow-lg hover:bg-indigo-50 font-medium transition-all">
+                                                📸 Ambil Foto
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Captured Photo Preview --}}
+                                <div id="photo-preview" class="mb-4 hidden">
+                                    <div class="max-w-md mx-auto">
+                                        <img id="captured-photo" class="w-full rounded-lg border-2 border-green-300 shadow-lg" style="transform: scaleX(-1);">
+                                        <div class="text-center mt-2">
+                                            <button type="button" onclick="retakeSelfie()" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                                🔄 Foto Ulang
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Action Buttons --}}
+                                <div class="flex justify-center gap-3">
+                                    @if(!$todayAttendance)
+                                        {{-- Start Camera for Clock In --}}
+                                        <button type="button" id="btn-start-clockin" onclick="startAttendance('clockin')"
+                                            class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-sm">
                                             <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                                             Absen Masuk
                                         </button>
-                                    </form>
-                                @elseif(!$todayAttendance->time_out)
-                                    <form method="POST" action="{{ route('attendance.clockOut') }}">
-                                        @csrf
-                                        <button type="submit" class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium shadow-sm">
+
+                                        {{-- Submit Button (hidden until photo captured) --}}
+                                        <form method="POST" action="{{ route('attendance.clockIn') }}" id="form-clockin" class="hidden">
+                                            @csrf
+                                            <input type="hidden" name="selfie_data" id="selfie-data-in">
+                                            <input type="hidden" name="latitude" id="lat-in">
+                                            <input type="hidden" name="longitude" id="lng-in">
+                                            <input type="hidden" name="location" id="loc-in">
+                                            <button type="submit" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-sm">
+                                                ✅ Kirim Absen Masuk
+                                            </button>
+                                        </form>
+                                    @elseif(!$todayAttendance->time_out)
+                                        {{-- Start Camera for Clock Out --}}
+                                        <button type="button" id="btn-start-clockout" onclick="startAttendance('clockout')"
+                                            class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium shadow-sm">
                                             <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                                             Absen Pulang
                                         </button>
-                                    </form>
-                                @else
-                                    <span class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-600 rounded-lg font-medium">
-                                        ✅ Absensi Lengkap
-                                    </span>
-                                @endif
+
+                                        {{-- Submit Button (hidden until photo captured) --}}
+                                        <form method="POST" action="{{ route('attendance.clockOut') }}" id="form-clockout" class="hidden">
+                                            @csrf
+                                            <input type="hidden" name="selfie_data" id="selfie-data-out">
+                                            <input type="hidden" name="latitude" id="lat-out">
+                                            <input type="hidden" name="longitude" id="lng-out">
+                                            <input type="hidden" name="location" id="loc-out">
+                                            <button type="submit" class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium shadow-sm">
+                                                ✅ Kirim Absen Pulang
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="text-center py-4">
+                                <span class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-600 rounded-lg font-medium">
+                                    ✅ Absensi Lengkap Hari Ini
+                                </span>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
-                {{-- Employee Info --}}
+                {{-- Employee Info + Payroll --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
@@ -94,7 +171,6 @@
                         </div>
                     </div>
 
-                    {{-- Recent Payrolls --}}
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-3">Riwayat Gaji Terakhir</h3>
@@ -136,6 +212,7 @@
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Masuk</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pulang</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Lokasi</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200">
@@ -151,6 +228,15 @@
                                                     <span class="text-green-600 font-medium">Tepat Waktu</span>
                                                 @endif
                                             </td>
+                                            <td class="px-4 py-3 text-sm">
+                                                @if($att->location_status === 'valid')
+                                                    <span class="text-green-600">✅ {{ $att->location }}</span>
+                                                @elseif($att->location_status === 'luar_lokasi')
+                                                    <span class="text-orange-600">⚠️ Luar Lokasi</span>
+                                                @else
+                                                    <span class="text-gray-400">-</span>
+                                                @endif
+                                            </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -162,4 +248,152 @@
             @endif
         </div>
     </div>
+
+    {{-- JavaScript for Camera, GPS, Real-time Clock --}}
+    <script>
+        let currentStream = null;
+        let currentMode = null; // 'clockin' or 'clockout'
+        let userLatitude = null;
+        let userLongitude = null;
+
+        // ============ REAL-TIME CLOCK (Asia/Jakarta) ============
+        function updateClock() {
+            const now = new Date();
+            // Force Jakarta time
+            const jakartaTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+            const hours = String(jakartaTime.getHours()).padStart(2, '0');
+            const minutes = String(jakartaTime.getMinutes()).padStart(2, '0');
+            const seconds = String(jakartaTime.getSeconds()).padStart(2, '0');
+
+            document.getElementById('live-clock').textContent = `${hours}:${minutes}:${seconds}`;
+
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            document.getElementById('live-date').textContent =
+                `${days[jakartaTime.getDay()]}, ${jakartaTime.getDate()} ${months[jakartaTime.getMonth()]} ${jakartaTime.getFullYear()}`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // ============ GPS DETECTION ============
+        function getGPSPosition() {
+            const gpsInfo = document.getElementById('gps-info');
+            if (!navigator.geolocation) {
+                gpsInfo.textContent = '❌ GPS tidak didukung';
+                gpsInfo.className = 'text-sm font-medium text-red-600';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLatitude = position.coords.latitude;
+                    userLongitude = position.coords.longitude;
+                    gpsInfo.textContent = `✅ ${userLatitude.toFixed(6)}, ${userLongitude.toFixed(6)}`;
+                    gpsInfo.className = 'text-sm font-medium text-green-600';
+                },
+                (error) => {
+                    gpsInfo.textContent = '❌ Izinkan akses lokasi';
+                    gpsInfo.className = 'text-sm font-medium text-red-600';
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        // Request GPS on page load
+        getGPSPosition();
+        setInterval(getGPSPosition, 30000); // refresh every 30s
+
+        // ============ CAMERA / SELFIE ============
+        async function startAttendance(mode) {
+            currentMode = mode;
+
+            // Hide start buttons
+            const btnIn = document.getElementById('btn-start-clockin');
+            const btnOut = document.getElementById('btn-start-clockout');
+            if (btnIn) btnIn.classList.add('hidden');
+            if (btnOut) btnOut.classList.add('hidden');
+
+            // Show camera
+            document.getElementById('camera-container').classList.remove('hidden');
+            document.getElementById('photo-preview').classList.add('hidden');
+
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+                    audio: false
+                });
+                document.getElementById('camera-preview').srcObject = currentStream;
+            } catch (err) {
+                alert('Tidak dapat mengakses kamera. Pastikan izin kamera sudah diberikan.');
+                resetCamera();
+            }
+        }
+
+        function captureSelfie() {
+            const video = document.getElementById('camera-preview');
+            const canvas = document.getElementById('camera-canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const ctx = canvas.getContext('2d');
+            // Mirror the image
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0);
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+            // Show preview
+            document.getElementById('captured-photo').src = dataUrl;
+            document.getElementById('camera-container').classList.add('hidden');
+            document.getElementById('photo-preview').classList.remove('hidden');
+
+            // Stop camera stream
+            if (currentStream) {
+                currentStream.getTracks().forEach(t => t.stop());
+            }
+
+            // Refresh GPS one more time
+            getGPSPosition();
+
+            // Fill form and show submit
+            if (currentMode === 'clockin') {
+                document.getElementById('selfie-data-in').value = dataUrl;
+                document.getElementById('lat-in').value = userLatitude || '';
+                document.getElementById('lng-in').value = userLongitude || '';
+                document.getElementById('loc-in').value = `${userLatitude},${userLongitude}`;
+                document.getElementById('form-clockin').classList.remove('hidden');
+            } else {
+                document.getElementById('selfie-data-out').value = dataUrl;
+                document.getElementById('lat-out').value = userLatitude || '';
+                document.getElementById('lng-out').value = userLongitude || '';
+                document.getElementById('loc-out').value = `${userLatitude},${userLongitude}`;
+                document.getElementById('form-clockout').classList.remove('hidden');
+            }
+        }
+
+        function retakeSelfie() {
+            document.getElementById('photo-preview').classList.add('hidden');
+            if (currentMode === 'clockin') {
+                document.getElementById('form-clockin').classList.add('hidden');
+            } else {
+                document.getElementById('form-clockout').classList.add('hidden');
+            }
+            startAttendance(currentMode);
+        }
+
+        function resetCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(t => t.stop());
+            }
+            document.getElementById('camera-container').classList.add('hidden');
+            document.getElementById('photo-preview').classList.add('hidden');
+
+            const btnIn = document.getElementById('btn-start-clockin');
+            const btnOut = document.getElementById('btn-start-clockout');
+            if (btnIn) btnIn.classList.remove('hidden');
+            if (btnOut) btnOut.classList.remove('hidden');
+        }
+    </script>
 </x-app-layout>

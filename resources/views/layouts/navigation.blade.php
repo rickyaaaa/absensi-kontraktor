@@ -26,6 +26,9 @@
                         <x-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">
                             Absensi
                         </x-nav-link>
+                        <x-nav-link :href="route('locations.index')" :active="request()->routeIs('locations.*')">
+                            Lokasi
+                        </x-nav-link>
                         <x-nav-link :href="route('overtimes.index')" :active="request()->routeIs('overtimes.*')">
                             Lembur
                         </x-nav-link>
@@ -38,8 +41,8 @@
                     @endif
 
                     @if(auth()->user()->isSupervisor())
-                        <x-nav-link :href="route('supervisor.attendances')" :active="request()->routeIs('supervisor.attendances')">
-                            Absensi
+                        <x-nav-link :href="route('supervisor.workerMonitoring')" :active="request()->routeIs('supervisor.workerMonitoring')">
+                            Monitoring Worker
                         </x-nav-link>
                     @endif
                 </div>
@@ -111,6 +114,9 @@
                 <x-responsive-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">
                     Absensi
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('locations.index')" :active="request()->routeIs('locations.*')">
+                    Lokasi
+                </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('overtimes.index')" :active="request()->routeIs('overtimes.*')">
                     Lembur
                 </x-responsive-nav-link>
@@ -123,8 +129,8 @@
             @endif
 
             @if(auth()->user()->isSupervisor())
-                <x-responsive-nav-link :href="route('supervisor.attendances')" :active="request()->routeIs('supervisor.attendances')">
-                    Absensi
+                <x-responsive-nav-link :href="route('supervisor.workerMonitoring')" :active="request()->routeIs('supervisor.workerMonitoring')">
+                    Monitoring Worker
                 </x-responsive-nav-link>
             @endif
         </div>

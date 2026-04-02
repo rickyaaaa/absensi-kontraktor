@@ -56,4 +56,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // Menambahkan route GET untuk mempermudah logout via pengetikan URL langsung sewaktu masa testing/development
+    Route::get('logout', [AuthenticatedSessionController::class, 'destroy']);
 });

@@ -7,6 +7,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\KasbonController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,7 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Attendance - clock in/out (all roles)
+    // Attendance - clock in/out (supervisor + worker)
     Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clockIn');
     Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])->name('attendance.clockOut');
     Route::get('/attendance/history', [AttendanceController::class, 'history'])->name('attendance.history');
@@ -37,6 +38,13 @@ Route::middleware('auth')->group(function () {
 
         // Attendances management
         Route::get('/attendances', [AttendanceController::class, 'index'])->name('attendances.index');
+
+        // Location management
+        Route::get('/locations', [LocationController::class, 'index'])->name('locations.index');
+        Route::post('/locations', [LocationController::class, 'store'])->name('locations.store');
+        Route::put('/locations/{location}', [LocationController::class, 'update'])->name('locations.update');
+        Route::patch('/locations/{location}/toggle', [LocationController::class, 'toggleActive'])->name('locations.toggle');
+        Route::delete('/locations/{location}', [LocationController::class, 'destroy'])->name('locations.destroy');
 
         // Overtime management
         Route::get('/overtimes', [OvertimeController::class, 'index'])->name('overtimes.index');
@@ -58,9 +66,10 @@ Route::middleware('auth')->group(function () {
         Route::patch('/payrolls/{payroll}/mark-paid', [PayrollController::class, 'markPaid'])->name('payrolls.markPaid');
     });
 
-    // Supervisor routes - can view attendances
+    // Supervisor routes
     Route::middleware('role:admin,supervisor')->group(function () {
         Route::get('/supervisor/attendances', [AttendanceController::class, 'index'])->name('supervisor.attendances');
+        Route::get('/supervisor/worker-monitoring', [AttendanceController::class, 'workerMonitoring'])->name('supervisor.workerMonitoring');
     });
 });
 
