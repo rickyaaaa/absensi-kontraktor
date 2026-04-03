@@ -27,9 +27,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/ajax', [ProfileController::class, 'updateProfileAjax'])->name('profile.update.ajax');
 
-    // Attendance - clock in/out (supervisor + worker)
-    Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clockIn');
-    Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])->name('attendance.clockOut');
+    // Attendance — clock in/out (supervisor + worker)
+    // AUDIT #4: throttle:3,1 = max 3 requests per 1 minute per IP (route-level guard)
+    // The controller also applies per-user RateLimiter for full defence-in-depth.
+    Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])
+        ->middleware('throttle:3,1')
+        ->name('attendance.clockIn');
+    Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])
+        ->middleware('throttle:3,1')
+        ->name('attendance.clockOut');
     Route::get('/attendance/history', [AttendanceController::class, 'history'])->name('attendance.history');
 
     // Admin only routes
