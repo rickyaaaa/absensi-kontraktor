@@ -7,17 +7,7 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Flash Messages --}}
-            @if(session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    {{ session('error') }}
-                </div>
-            @endif
+            {{-- Flash messages handled globally by SweetAlert2 in layout --}}
 
             @if(!$employee)
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
@@ -322,7 +312,7 @@
                 });
                 document.getElementById('camera-preview').srcObject = currentStream;
             } catch (err) {
-                alert('Tidak dapat mengakses kamera. Pastikan izin kamera sudah diberikan.');
+                Swal.fire({ title: 'Kamera Tidak Tersedia', text: 'Pastikan izin kamera sudah diberikan.', icon: 'warning', confirmButtonColor: '#6366f1' });
                 resetCamera();
             }
         }

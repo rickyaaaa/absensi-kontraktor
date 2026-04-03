@@ -9,13 +9,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
-/**
- * AUDIT FIXES APPLIED:
- * #1 — N+1: All list queries now use with(['employee.user']) / with(['employee'])
- * #2 — Secure Upload: Base64 images are validated for real MIME, saved with
- *        random names, always as .jpg. No user-controlled extension possible.
- * #4 — Rate Limiting: clockIn and clockOut are limited to 3 hits / 1 min per user.
- */
 class AttendanceController extends Controller
 {
     protected AttendanceService $attendanceService;
@@ -104,7 +97,7 @@ class AttendanceController extends Controller
             return back()->with('error',
                 "Terlalu banyak percobaan absen. Coba lagi dalam {$seconds} detik.");
         }
-        RateLimiter::hit($rateLimitKey, decay: 60);
+        RateLimiter::hit($rateLimitKey, 60);
         // ─────────────────────────────────────────────────────────────────────
 
         try {
@@ -143,14 +136,17 @@ class AttendanceController extends Controller
             );
 
             $message = 'Absen masuk berhasil dicatat.';
+            $swalType = 'clockin';
             if ($attendance->late_minutes > 0) {
                 $message .= ' Anda terlambat ' . $attendance->late_minutes . ' menit.';
+                $swalType = 'clockin_late';
             }
 
-            return back()->with('success', $message);
+            return back()->with('success', $message)->with('swal_type', $swalType);
 
         } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            $swalType = str_contains($e->getMessage(), 'luar radius') ? 'location_error' : 'error';
+            return back()->with('error', $e->getMessage())->with('swal_type', $swalType);
         }
     }
 
@@ -173,7 +169,7 @@ class AttendanceController extends Controller
             return back()->with('error',
                 "Terlalu banyak percobaan absen pulang. Coba lagi dalam {$seconds} detik.");
         }
-        RateLimiter::hit($rateLimitKey, decay: 60);
+        RateLimiter::hit($rateLimitKey, 60);
         // ─────────────────────────────────────────────────────────────────────
 
         try {
@@ -204,10 +200,11 @@ class AttendanceController extends Controller
 
             $this->attendanceService->clockOut($employee, $photoOutPath, $latitude, $longitude);
 
-            return back()->with('success', 'Absen pulang berhasil dicatat.');
+            return back()->with('success', 'Absen pulang berhasil dicatat.')->with('swal_type', 'clockout');
 
         } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            $swalType = str_contains($e->getMessage(), 'luar radius') ? 'location_error' : 'error';
+            return back()->with('error', $e->getMessage())->with('swal_type', $swalType);
         }
     }
 

@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Attendance;
+use App\Models\Kasbon;
+use App\Models\Overtime;
 use App\Models\Payroll;
 use App\Models\Location;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * AUDIT FIX #1 — N+1 Query Problem
@@ -40,13 +43,36 @@ class DashboardController extends Controller
 
     private function adminDashboard()
     {
+        $today = Carbon::today('Asia/Jakarta');
+
         $totalEmployees    = Employee::count();
-        $todayAttendances  = Attendance::where('date', Carbon::today('Asia/Jakarta')->toDateString())->count();
+        $todayAttendances  = Attendance::where('date', $today->toDateString())->count();
         $pendingPayrolls   = Payroll::where('status', 'pending')->count();
+
+        // ── New Quick Stats ──────────────────────────────────
+        // Total pending kasbon (current month)
+        $pendingKasbons = Kasbon::whereMonth('date', $today->month)
+            ->whereYear('date', $today->year)
+            ->count();
+
+        // Total overtime hours this month
+        $totalOvertimeMinutes = Overtime::whereMonth('date', $today->month)
+            ->whereYear('date', $today->year)
+            ->sum('total_minutes');
+        $totalOvertimeHours = round($totalOvertimeMinutes / 60, 1);
+
+        // ── Chart: Daily attendance counts for the last 7 days ──
+        $chartLabels = [];
+        $chartData   = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = $today->copy()->subDays($i);
+            $chartLabels[] = $date->translatedFormat('D, d M'); // e.g. "Sen, 28 Mar"
+            $chartData[]   = Attendance::where('date', $date->toDateString())->count();
+        }
 
         // N+1 already correct ✓
         $recentAttendances = Attendance::with(['employee.user'])
-            ->where('date', Carbon::today('Asia/Jakarta')->toDateString())
+            ->where('date', $today->toDateString())
             ->latest()
             ->take(10)
             ->get();
@@ -57,6 +83,10 @@ class DashboardController extends Controller
             'totalEmployees',
             'todayAttendances',
             'pendingPayrolls',
+            'pendingKasbons',
+            'totalOvertimeHours',
+            'chartLabels',
+            'chartData',
             'recentAttendances',
             'locations'
         ));
