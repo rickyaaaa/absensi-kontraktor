@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             Dashboard Saya
         </h2>
     </x-slot>
@@ -62,11 +62,11 @@
             {{-- Flash messages handled globally by SweetAlert2 in layout --}}
 
             @if(!$employee)
-                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
-                    <svg class="mx-auto h-12 w-12 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-6 text-center transition-colors">
+                    <svg class="mx-auto h-12 w-12 text-amber-400 dark:text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.962-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                     </svg>
-                    <p class="mt-3 text-amber-800 font-medium">Data karyawan Anda belum terdaftar. Hubungi admin.</p>
+                    <p class="mt-3 text-amber-800 dark:text-amber-300 font-medium">Data karyawan Anda belum terdaftar. Hubungi admin.</p>
                 </div>
             @else
 
@@ -94,7 +94,7 @@
                 {{-- ══════════════════════════════════════════════ --}}
                 {{-- ATTENDANCE CIRCLE BUTTON                      --}}
                 {{-- ══════════════════════════════════════════════ --}}
-                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 overflow-hidden transition-colors">
                     <div class="p-6 sm:p-8">
 
                         {{-- Status Badge --}}
@@ -139,11 +139,11 @@
 
                                 {{-- Location Selector --}}
                                 <div class="mb-6">
-                                    <label for="location-select" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="location-select" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                         📍 Pilih Lokasi Absensi
                                     </label>
                                     <select id="location-select" onchange="onLocationSelect(this)"
-                                        class="block w-full rounded-xl border-gray-200 bg-gray-50 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-3 transition-colors">
+                                        class="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-3 transition-colors text-gray-900 dark:text-gray-100">
                                         <option value="" disabled selected>-- Pilih Lokasi --</option>
                                         @isset($locations)
                                             @foreach($locations as $loc)
@@ -262,12 +262,12 @@
                         @else
                             {{-- Attendance Complete --}}
                             <div class="flex justify-center my-8">
-                                <div class="flex flex-col items-center justify-center h-40 w-40 sm:h-48 sm:w-48 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-gray-200">
+                                <div class="flex flex-col items-center justify-center h-40 w-40 sm:h-48 sm:w-48 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 border-2 border-gray-200 dark:border-gray-600 transition-colors">
                                     <svg class="h-12 w-12 text-emerald-500 mb-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                     </svg>
-                                    <span class="text-sm font-semibold text-gray-600">Selesai</span>
-                                    <span class="text-xs text-gray-400 mt-0.5">Absensi Lengkap</span>
+                                    <span class="text-sm font-semibold text-gray-600 dark:text-gray-300">Selesai</span>
+                                    <span class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Absensi Lengkap</span>
                                 </div>
                             </div>
                         @endif
@@ -279,8 +279,8 @@
                 {{-- ══════════════════════════════════════════════ --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                     {{-- Employee Info Card --}}
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                        <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 transition-colors">
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                             <svg class="h-4 w-4 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                             </svg>
@@ -288,38 +288,38 @@
                         </h3>
                         <dl class="space-y-2.5">
                             <div class="flex justify-between items-center">
-                                <dt class="text-xs text-gray-400">Posisi</dt>
-                                <dd class="text-sm font-medium text-gray-900">{{ $employee->position }}</dd>
+                                <dt class="text-xs text-gray-400 dark:text-gray-500">Posisi</dt>
+                                <dd class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $employee->position }}</dd>
                             </div>
                             <div class="flex justify-between items-center">
-                                <dt class="text-xs text-gray-400">Tipe Gaji</dt>
-                                <dd class="text-sm font-medium text-gray-900">{{ ucfirst($employee->salary_type) }}</dd>
+                                <dt class="text-xs text-gray-400 dark:text-gray-500">Tipe Gaji</dt>
+                                <dd class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ ucfirst($employee->salary_type) }}</dd>
                             </div>
                             <div class="flex justify-between items-center">
-                                <dt class="text-xs text-gray-400">Gaji Harian</dt>
-                                <dd class="text-sm font-bold text-indigo-600">Rp {{ number_format($employee->base_salary, 0, ',', '.') }}</dd>
+                                <dt class="text-xs text-gray-400 dark:text-gray-500">Gaji Harian</dt>
+                                <dd class="text-sm font-bold text-indigo-600 dark:text-indigo-400">Rp {{ number_format($employee->base_salary, 0, ',', '.') }}</dd>
                             </div>
                         </dl>
                     </div>
 
                     {{-- Recent Payroll Card --}}
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                        <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 transition-colors">
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                             <svg class="h-4 w-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
                             </svg>
                             Riwayat Gaji
                         </h3>
                         @if($recentPayrolls->isEmpty())
-                            <p class="text-gray-400 text-xs text-center py-4">Belum ada data.</p>
+                            <p class="text-gray-400 dark:text-gray-500 text-xs text-center py-4">Belum ada data.</p>
                         @else
                             <div class="space-y-2">
                                 @foreach($recentPayrolls as $payroll)
-                                    <div class="flex justify-between items-center py-1.5 border-b border-gray-50 last:border-b-0">
-                                        <p class="text-xs text-gray-500">{{ $payroll->period_start->format('d/m') }} - {{ $payroll->period_end->format('d/m/Y') }}</p>
+                                    <div class="flex justify-between items-center py-1.5 border-b border-gray-50 dark:border-gray-700 last:border-b-0">
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $payroll->period_start->format('d/m') }} - {{ $payroll->period_end->format('d/m/Y') }}</p>
                                         <div class="text-right">
-                                            <p class="text-xs font-bold text-gray-900">Rp {{ number_format($payroll->final_salary, 0, ',', '.') }}</p>
-                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium {{ $payroll->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700' }}">
+                                            <p class="text-xs font-bold text-gray-900 dark:text-gray-100">Rp {{ number_format($payroll->final_salary, 0, ',', '.') }}</p>
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium {{ $payroll->status === 'paid' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' }}">
                                                 {{ $payroll->status === 'paid' ? 'Dibayar' : 'Pending' }}
                                             </span>
                                         </div>
@@ -333,21 +333,21 @@
                 {{-- ══════════════════════════════════════════════ --}}
                 {{-- RECENT ATTENDANCE TABLE                       --}}
                 {{-- ══════════════════════════════════════════════ --}}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors">
                     <div class="p-5">
-                        <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                             <svg class="h-4 w-4 text-violet-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                             </svg>
                             Riwayat 7 Hari Terakhir
                         </h3>
                         @if($recentAttendances->isEmpty())
-                            <p class="text-gray-400 text-xs text-center py-6">Belum ada data absensi.</p>
+                            <p class="text-gray-400 dark:text-gray-500 text-xs text-center py-6">Belum ada data absensi.</p>
                         @else
                             <div class="overflow-x-auto -mx-5">
                                 <table class="min-w-full text-sm">
                                     <thead>
-                                        <tr class="border-b border-gray-100">
+                                        <tr class="border-b border-gray-100 dark:border-gray-700">
                                             <th class="px-5 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Tanggal</th>
                                             <th class="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Masuk</th>
                                             <th class="px-3 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Pulang</th>
@@ -355,22 +355,22 @@
                                             <th class="px-5 py-2 text-left text-xs font-semibold text-gray-400 uppercase">Lokasi</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-50">
+                                    <tbody class="divide-y divide-gray-50 dark:divide-gray-700/50">
                                         @foreach($recentAttendances as $att)
-                                        <tr class="hover:bg-gray-50/50 transition-colors">
-                                            <td class="px-5 py-2.5 whitespace-nowrap text-gray-900 font-medium">{{ $att->date->format('d/m/Y') }}</td>
-                                            <td class="px-3 py-2.5 whitespace-nowrap text-gray-500 font-mono text-xs">{{ $att->time_in ?? '-' }}</td>
-                                            <td class="px-3 py-2.5 whitespace-nowrap text-gray-500 font-mono text-xs">{{ $att->time_out ?? '-' }}</td>
+                                        <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
+                                            <td class="px-5 py-2.5 whitespace-nowrap text-gray-900 dark:text-gray-100 font-medium">{{ $att->date->format('d/m/Y') }}</td>
+                                            <td class="px-3 py-2.5 whitespace-nowrap text-gray-500 dark:text-gray-400 font-mono text-xs">{{ $att->time_in ?? '-' }}</td>
+                                            <td class="px-3 py-2.5 whitespace-nowrap text-gray-500 dark:text-gray-400 font-mono text-xs">{{ $att->time_out ?? '-' }}</td>
                                             <td class="px-3 py-2.5 whitespace-nowrap">
                                                 @if($att->late_minutes > 0)
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-50 text-red-600">Telat {{ $att->late_minutes }}m</span>
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-50 text-red-600 dark:bg-red-900/40 dark:text-red-300">Telat {{ $att->late_minutes }}m</span>
                                                 @else
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 text-green-600">Tepat Waktu</span>
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 text-green-600 dark:bg-green-900/40 dark:text-green-300">Tepat Waktu</span>
                                                 @endif
                                             </td>
                                             <td class="px-5 py-2.5 whitespace-nowrap text-xs">
                                                 @if($att->location_status === 'valid')
-                                                    <span class="text-green-600">✅ {{ $att->location }}</span>
+                                                    <span class="text-green-600 dark:text-green-400">✅ {{ $att->location }}</span>
                                                 @elseif($att->location_status === 'luar_lokasi')
                                                     <span class="text-orange-500">⚠️ Luar</span>
                                                 @else

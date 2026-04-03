@@ -7,6 +7,18 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        {{-- Dark Mode: Inline script to prevent white flash --}}
+        <script>
+            (function() {
+                const theme = localStorage.getItem('theme');
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            })();
+        </script>
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -19,12 +31,12 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow">
+                <header class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-700/30 transition-colors duration-300">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -87,7 +99,6 @@
                 // ── ERROR ────────────────────────────────────────
                 if (errorMsg) {
                     if (swalType === 'location_error') {
-                        // Special SweetAlert for outside-radius attempts
                         Swal.fire({
                             title: '📍 Di Luar Radius Lokasi!',
                             html: '<div class="text-left">'
@@ -113,6 +124,60 @@
                             confirmButtonColor: '#ef4444',
                         });
                     }
+                }
+            });
+
+            // ── Dark Mode Toggle Script ───────────────────────
+            document.addEventListener('DOMContentLoaded', function() {
+                var themeToggleBtn = document.getElementById('theme-toggle');
+                var themeToggleMobileBtn = document.getElementById('theme-toggle-mobile');
+                var darkIcon = document.getElementById('theme-toggle-dark-icon');
+                var lightIcon = document.getElementById('theme-toggle-light-icon');
+                var darkIconMobile = document.getElementById('theme-toggle-dark-icon-mobile');
+                var lightIconMobile = document.getElementById('theme-toggle-light-icon-mobile');
+
+                // Change the icons inside the button based on previous settings
+                if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    if (lightIcon) lightIcon.classList.remove('hidden');
+                    if (lightIconMobile) lightIconMobile.classList.remove('hidden');
+                } else {
+                    if (darkIcon) darkIcon.classList.remove('hidden');
+                    if (darkIconMobile) darkIconMobile.classList.remove('hidden');
+                }
+
+                function toggleTheme() {
+                    // toggle icons inside button
+                    if (darkIcon) darkIcon.classList.toggle('hidden');
+                    if (lightIcon) lightIcon.classList.toggle('hidden');
+                    if (darkIconMobile) darkIconMobile.classList.toggle('hidden');
+                    if (lightIconMobile) lightIconMobile.classList.toggle('hidden');
+
+                    // if set via local storage previously
+                    if (localStorage.getItem('theme')) {
+                        if (localStorage.getItem('theme') === 'light') {
+                            document.documentElement.classList.add('dark');
+                            localStorage.setItem('theme', 'dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                            localStorage.setItem('theme', 'light');
+                        }
+                    // if NOT set via local storage previously
+                    } else {
+                        if (document.documentElement.classList.contains('dark')) {
+                            document.documentElement.classList.remove('dark');
+                            localStorage.setItem('theme', 'light');
+                        } else {
+                            document.documentElement.classList.add('dark');
+                            localStorage.setItem('theme', 'dark');
+                        }
+                    }
+                }
+
+                if (themeToggleBtn) {
+                    themeToggleBtn.addEventListener('click', toggleTheme);
+                }
+                if (themeToggleMobileBtn) {
+                    themeToggleMobileBtn.addEventListener('click', toggleTheme);
                 }
             });
         </script>

@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             Dashboard Admin
         </h2>
     </x-slot>
@@ -90,11 +90,11 @@
             {{-- ═══════════════════════════════════════════════════ --}}
             {{-- ATTENDANCE BAR CHART — Last 7 Days                 --}}
             {{-- ═══════════════════════════════════════════════════ --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-8 overflow-hidden transition-colors">
                 <div class="px-6 pt-6 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900">Rekap Absensi Harian</h3>
-                        <p class="text-sm text-gray-500">7 hari terakhir</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Rekap Absensi Harian</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">7 hari terakhir</p>
                     </div>
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
                         <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
@@ -109,9 +109,9 @@
             {{-- ═══════════════════════════════════════════════════ --}}
             {{-- QUICK ACTIONS                                      --}}
             {{-- ═══════════════════════════════════════════════════ --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-8 overflow-hidden transition-colors">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Aksi Cepat</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Aksi Cepat</h3>
                     <div class="flex flex-wrap gap-3">
                         <a href="{{ route('employees.create') }}" class="inline-flex items-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-200 text-sm font-medium shadow-sm shadow-indigo-200 hover:shadow-md hover:shadow-indigo-300">
                             <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
@@ -146,50 +146,50 @@
             {{-- ═══════════════════════════════════════════════════ --}}
             {{-- RECENT ATTENDANCE TABLE                            --}}
             {{-- ═══════════════════════════════════════════════════ --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Absensi Hari Ini</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Absensi Hari Ini</h3>
                     @if($recentAttendances->isEmpty())
                         <div class="text-center py-12">
-                            <svg class="mx-auto h-12 w-12 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <svg class="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                             </svg>
-                            <p class="mt-2 text-gray-500">Belum ada data absensi hari ini.</p>
+                            <p class="mt-2 text-gray-500 dark:text-gray-400">Belum ada data absensi hari ini.</p>
                         </div>
                     @else
-                        <div class="overflow-x-auto rounded-xl border border-gray-100">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50/80">
+                        <div class="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-700">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50/80 dark:bg-gray-700/50">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama</th>
-                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Posisi</th>
-                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Jam Masuk</th>
-                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Jam Pulang</th>
-                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Telat</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nama</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Posisi</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Jam Masuk</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Jam Pulang</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Telat</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-100">
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                                     @foreach($recentAttendances as $attendance)
-                                    <tr class="hover:bg-gray-50/50 transition-colors">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                             {{ $attendance->employee->user->name ?? '-' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {{ $attendance->employee->position ?? '-' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">
                                             {{ $attendance->time_in ?? '-' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">
                                             {{ $attendance->time_out ?? '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             @if($attendance->late_minutes > 0)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300">
                                                     {{ $attendance->late_minutes }} menit
                                                 </span>
                                             @else
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
                                                     Tepat Waktu
                                                 </span>
                                             @endif

@@ -55,4 +55,17 @@ class User extends Authenticatable
     {
         return $this->role === 'worker';
     }
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->photo) {
+            return \Illuminate\Support\Facades\Storage::url($this->photo);
+        }
+
+        $name = trim(collect(explode(' ', $this->name))->map(function ($segment) {
+            return mb_substr($segment, 0, 1);
+        })->join(' '));
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=7F9CF5&background=EBF4FF';
+    }
 }
